@@ -6,9 +6,9 @@
       <!-- 1. Briefing Stage -->
       <div v-if="step === 'briefing'" class="h-full overflow-y-auto p-6 flex flex-col bg-[var(--bg)]">
         <p class="eyebrow">Vor dem Start</p>
-        <h1 class="font-display text-[24px] text-[var(--ink)] mb-3">Briefing</h1>
+        <h1 class="font-display text-[24px] text-[var(--ink)] mb-3">Szenario</h1>
         <p class="mb-5 text-[13.5px] leading-relaxed text-[var(--ink-soft)]">
-          In this study, you will interact with a new Health App prototype. Please answer the following and click start.
+          Dies ist eine Studie: Stell dir vor.....
         </p>
 
         <div class="card space-y-3 mb-6">
@@ -17,7 +17,7 @@
             <input v-model="userData.name" type="text" placeholder="Name/ID" class="field" />
           </div>
           <div>
-            <label class="field-label">Age</label>
+            <label class="field-label">Alter</label>
             <input v-model="userData.age" type="number" placeholder="Age" class="field" />
           </div>
         </div>
@@ -28,7 +28,7 @@
           :disabled="!userData.name || !userData.age"
           @click="step = 'prototype'"
         >
-          Start Prototype
+          Starten
         </button>
       </div>
 
