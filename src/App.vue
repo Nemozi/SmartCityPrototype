@@ -18,7 +18,7 @@
           </div>
           <div>
             <label class="field-label">Alter</label>
-            <input v-model="userData.age" type="number" placeholder="Age" class="field" />
+            <input v-model="userData.age" type="number" placeholder="Alter" class="field" />
           </div>
         </div>
 
