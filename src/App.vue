@@ -6,9 +6,13 @@
       <!-- 1. Briefing Stage -->
       <div v-if="step === 'briefing'" class="h-full overflow-y-auto p-6 flex flex-col bg-[var(--bg)]">
         <p class="eyebrow">Vor dem Start</p>
-        <h1 class="font-display text-[24px] text-[var(--ink)] mb-3">Szenario</h1>
+        <h1 class="font-display text-[24px] text-[var(--ink)] mb-3"> Szenario</h1>
         <p class="mb-5 text-[13.5px] leading-relaxed text-[var(--ink-soft)]">
           Dies ist eine Studie: Stell dir vor.....
+          <br>
+          Hier soll der Nutzer ein Formular ausfüllen mit welchem wir ihm das Persona zuteilen können. 
+          <br> 
+          Das Formular hier ist ein Platzhalter, das Design dafür sollte ein anderes sein als vom Prototypen.
         </p>
 
         <div class="card space-y-3 mb-6">
