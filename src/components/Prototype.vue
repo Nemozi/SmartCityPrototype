@@ -59,6 +59,9 @@
             </ul>
           </div>
 
+          <!-- Manuelle Profilwahl: nur relevant, wenn diese Komponente ohne assignedPersona
+               (z. B. isoliert zum Testen) eingebunden wird. Bei zugewiesenem Persona
+               überspringt onMounted() diesen Screen automatisch. -->
           <div class="space-y-2.5 pt-1">
             <p class="text-[11px] font-semibold uppercase tracking-wide text-[var(--ink-soft)] px-1 mb-1">Profil zum Testen wählen</p>
             <button v-for="p in personas" :key="p.id" class="persona-card press" @click="startPath(p.id)">
@@ -299,7 +302,14 @@
 </template>
 
 <script setup>
-import { ref, reactive, h } from 'vue';
+import { ref, reactive, h, onMounted } from 'vue';
+
+const props = defineProps({
+  // Persona-ID aus der Vorbefragung: 'gutgläubig' | 'skeptiker' | 'misstrauend'.
+  // Leer, wenn die Komponente ohne Vorbefragung/App-Flow getestet wird —
+  // dann bleibt die manuelle Profilwahl im Setup-Screen aktiv.
+  assignedPersona: { type: String, default: '' },
+});
 
 const emit = defineEmits(['finish']);
 
@@ -427,9 +437,21 @@ const restartPrototype = () => {
   settings.mic = true;
   settings.gps = true;
   settings.temp = true;
-  currentScreen.value = 'setup';
+  if (props.assignedPersona) {
+    // Echte Teilnehmer:innen haben ein festes Persona -> direkt wieder dorthin,
+    // statt zur manuellen Auswahl zurückzuspringen.
+    startPath(props.assignedPersona);
+  } else {
+    currentScreen.value = 'setup';
+  }
   showToast('Neu gestartet');
 };
+
+// Bei zugewiesenem Persona (aus der Vorbefragung) den Setup-Screen überspringen
+// und direkt mit dem passenden Pfad starten.
+onMounted(() => {
+  if (props.assignedPersona) startPath(props.assignedPersona);
+});
 </script>
 
 <style scoped>

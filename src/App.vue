@@ -5,41 +5,29 @@
 
       <!-- 1. Briefing Stage -->
       <div v-if="step === 'briefing'" class="h-full overflow-y-auto p-6 flex flex-col bg-[var(--bg)]">
-        <p class="eyebrow">Vor dem Start</p>
-        <h1 class="font-display text-[24px] text-[var(--ink)] mb-3"> Szenario</h1>
-        <p class="mb-5 text-[13.5px] leading-relaxed text-[var(--ink-soft)]">
-          Dies ist eine Studie: Stell dir vor.....
-          <br>
-          Hier soll der Nutzer ein Formular ausfüllen mit welchem wir ihm das Persona zuteilen können. 
-          <br> 
-          Das Formular hier ist ein Platzhalter, das Design dafür sollte ein anderes sein als vom Prototypen.
-        </p>
-
-        <div class="card space-y-3 mb-6">
-          <div>
-            <label class="field-label">Name / ID</label>
-            <input v-model="userData.name" type="text" placeholder="Name/ID" class="field" />
-          </div>
-          <div>
-            <label class="field-label">Alter</label>
-            <input v-model="userData.age" type="number" placeholder="Alter" class="field" />
-          </div>
-        </div>
-
-        <div class="grow"></div>
         <button
           class="primary-btn press"
-          :disabled="!userData.name || !userData.age"
-          @click="step = 'prototype'"
+          @click="step = 'vorbefragung'"
         >
-          Starten
+          Weiter
         </button>
       </div>
 
-      <!-- 2. Prototype Stage -->
-      <Prototype v-if="step === 'prototype'" :userData="userData" @finish="onPrototypeComplete" />
+      <!-- 2. Vorbefragung Stage (ordnet die Person einem Persona-Typ zu) -->
+      <Vorbefragung v-if="step === 'vorbefragung'" @complete="onVorbefragungComplete" />
 
-      <!-- 3. Exit Survey Stage -->
+      <!-- 3. Szenario Stage -->
+      <Szenario v-if="step === 'szenario'" @continue="step = 'prototype'" />
+
+      <!-- 4. Prototype Stage -->
+      <Prototype
+        v-if="step === 'prototype'"
+        :userData="userData"
+        :assignedPersona="userData.persona"
+        @finish="onPrototypeComplete"
+      />
+
+      <!-- 5. Exit Survey Stage -->
       <div v-if="step === 'survey'" class="h-full overflow-y-auto p-6 flex flex-col bg-[var(--bg)]">
         <p class="eyebrow">Fast geschafft</p>
         <h1 class="font-display text-[24px] text-[var(--ink)] mb-3">Final Feedback</h1>
@@ -72,17 +60,35 @@
 <script setup>
 import { ref, reactive, h } from 'vue';
 import Prototype from './components/Prototype.vue';
+import Vorbefragung from './components/Vorbefragung.vue';
+import Szenario from './components/Szenario.vue';
 import { supabase } from './supabase';
 
 const step = ref('briefing');
 const loading = ref(false);
 const submitted = ref(false);
-const userData = reactive({ name: '', age: null, feedback: '', settings: {} });
+const userData = reactive({
+  name: '',
+  age: null,
+  feedback: '',
+  settings: {},
+  // aus der Vorbefragung:
+  persona: '',
+  vorbefragungScore: null,
+  vorbefragungAnswers: [],
+});
 
 const CheckIcon = () =>
   h('svg', { viewBox: '0 0 24 24', fill: 'none', width: 16, height: 16 }, [
     h('path', { d: 'M5 12.5 9.5 17 19 7', stroke: 'currentColor', 'stroke-width': 1.8, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }),
   ]);
+
+const onVorbefragungComplete = (result) => {
+  userData.persona = result.personaId;
+  userData.vorbefragungScore = result.score;
+  userData.vorbefragungAnswers = result.answers;
+  step.value = 'szenario';
+};
 
 const onPrototypeComplete = (finalSettings) => {
   userData.settings = finalSettings;
@@ -94,6 +100,9 @@ const submitToSupabase = async () => {
   const { error } = await supabase.from('study_data').insert([{
     participant_name: userData.name,
     age: userData.age,
+    persona: userData.persona,
+    pretest_score: userData.vorbefragungScore,
+    pretest_answers: userData.vorbefragungAnswers,
     camera_enabled: userData.settings.camera,
     gps_enabled: userData.settings.gps,
     mic_enabled: userData.settings.mic,
