@@ -1,42 +1,44 @@
 <template>
-  <div class="h-full overflow-y-auto p-6 flex flex-col bg-[var(--bg)] vf-screen">
-    <p class="eyebrow">Vorbefragung</p>
-    <h1 class="font-display text-[24px] text-[var(--ink)] mb-3">Formular</h1>
-    <p class="mb-6 text-[13.5px] leading-relaxed text-[var(--ink-soft)]">
-      Bitte gib an, wie sehr die folgenden Aussagen auf dich zutreffen. Es gibt keine richtigen
-      oder falschen Antworten – uns interessiert deine persönliche Einschätzung.
-    </p>
+  <div class="min-h-screen w-full flex justify-center px-6 py-16 bg-[var(--bg)] vf-screen">
+    <div class="w-full max-w-[600px]">
+      <p class="eyebrow">Vorbefragung</p>
+      <h1 class="font-display text-[28px] text-[var(--ink)] mb-3">Formular</h1>
+      <p class="p-4 text-left mb-8 text-[15px] leading-relaxed text-[var(--ink-soft)]">
+       Bitte gib an, wie sehr die folgenden Aussagen auf dich zutreffen. 
+       <br>
+       Es gibt keine richtigen oder falschen Antworten uns interessiert deine persönliche Einschätzung.
+      </p>
 
-    <div class="space-y-4 mb-6">
-      <div v-for="(q, i) in questions" :key="i" class="card">
-        <div class="flex gap-2.5 mb-4">
-          <span class="q-index">{{ i + 1 }}</span>
-          <p class="text-[14px] leading-snug text-[var(--ink)]">{{ q }}</p>
-        </div>
+      <div class="space-y-4 mb-8">
+        <div v-for="(q, i) in questions" :key="i" class="card">
+          <div class="flex gap-2.5 mb-4">
+            <span class="q-index">{{ i + 1 }}</span>
+            <p class="text-[14px] leading-snug text-[var(--ink)]">{{ q }}</p>
+          </div>
 
-        <div class="likert" role="radiogroup" :aria-label="q">
-          <button
-            v-for="opt in 5"
-            :key="opt"
-            type="button"
-            role="radio"
-            :aria-checked="answers[i] === opt - 1"
-            class="likert-dot press"
-            :class="{ 'is-selected': answers[i] === opt - 1 }"
-            @click="answers[i] = opt - 1"
-          >{{ opt }}</button>
-        </div>
-        <div class="likert-endlabels">
-          <span>Stimme überhaupt nicht zu</span>
-          <span>Stimme voll zu</span>
+          <div class="likert" role="radiogroup" :aria-label="q">
+            <button
+              v-for="opt in 5"
+              :key="opt"
+              type="button"
+              role="radio"
+              :aria-checked="answers[i] === opt - 1"
+              class="likert-dot press"
+              :class="{ 'is-selected': answers[i] === opt - 1 }"
+              @click="answers[i] = opt - 1"
+            >{{ opt }}</button>
+          </div>
+          <div class="likert-endlabels">
+            <span>Stimme überhaupt nicht zu</span>
+            <span>Stimme voll zu</span>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="grow"></div>
-    <button class="primary-btn press" :disabled="!allAnswered" @click="submit">
-      Weiter
-    </button>
+      <button class="primary-btn press" :disabled="!allAnswered" @click="submit">
+        Weiter
+      </button>
+    </div>
   </div>
 </template>
 
@@ -69,16 +71,32 @@ const submit = () => {
 
   let personaId;
   let personaLabel;
+  let band;
   if (score <= 0) {
     personaId = 'gutgläubig';
     personaLabel = 'Gutgläubig';
+    band = '-10 .. 0';
   } else if (score <= 5) {
     personaId = 'skeptiker';
     personaLabel = 'Skeptisch';
+    band = '1 .. 5';
   } else {
     personaId = 'misstrauend';
     personaLabel = 'Misstrauisch';
+    band = '6 .. 10';
   }
+
+  // Live-Ausgabe in der Browser-Konsole zur direkten Überprüfung der Zuordnung.
+  console.group('Vorbefragung – Typenzuordnung');
+  console.log('Rohantworten je Frage (Option 1–5, Skalenwert -2..+2):');
+  questions.forEach((q, i) => {
+    console.log(`  F${i + 1}: Option ${answers.value[i] + 1}/5 (Skalenwert ${v[i]}) – "${q}"`);
+  });
+  console.log(
+    `Formel: F1+F2+F3+F4-F5 = ${v[0]} + ${v[1]} + ${v[2]} + ${v[3]} - (${v[4]}) = ${score}`
+  );
+  console.log(`Einteilung: Score ${score} liegt in [${band}] -> ${personaLabel} (${personaId})`);
+  console.groupEnd();
 
   emit('complete', {
     answers: answers.value.slice(),
@@ -114,6 +132,8 @@ const submit = () => {
   color: var(--primary);
   margin-bottom: 0.25rem;
 }
+
+.font-display { font-family: 'Fraunces', ui-serif, Georgia, serif; font-weight: 600; }
 
 /* Question Cards */
 .card {
@@ -240,5 +260,9 @@ const submit = () => {
   color: #94a3b8;
   cursor: not-allowed;
   box-shadow: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition-duration: .001ms !important; animation-duration: .001ms !important; }
 }
 </style>

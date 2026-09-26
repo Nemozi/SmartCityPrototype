@@ -1,59 +1,58 @@
 <template>
-  <div class="min-h-screen bg-[#DAD4C4] flex items-center justify-center p-4 app-root">
-    <!-- Mobile Wrapper -->
-    <div class="w-full max-w-[375px] h-[700px] bg-white rounded-[3rem] shadow-2xl overflow-hidden relative border-[8px] border-gray-800">
+  <div class="app-root">
 
-      <!-- 1. Briefing Stage -->
-      <div v-if="step === 'briefing'" class="h-full overflow-y-auto p-6 flex flex-col bg-[var(--bg)]">
-        <button
-          class="primary-btn press"
-          @click="step = 'vorbefragung'"
-        >
-          Weiter
-        </button>
+    <!-- ============ WEBSITE-STAGES ============
+         Szenario, Vorbefragung und Nachbefragung laufen im normalen
+         Website-Layout — bewusst visuell getrennt vom App-Prototyp, damit
+         klar wird: die App ist nur ein Teil der Gesamtstudie. -->
+    <div v-if="step !== 'prototype'" class="site">
+
+      <!-- 1. Start -->
+      <div v-if="step === 'briefing'" class="site-page">
+        <div class="site-page-inner">
+          <p class="eyebrow">Vor dem Start</p>
+          <h1 class="font-display text-[28px] text-[var(--ink)] mb-3">Willkommen zur Studie</h1>
+          <p class="p-4 mb-10 text-[15px] leading-relaxed text-[var(--ink-soft)]">
+          Im nächsten Schritt stellen wir dir ein paar kurze Fragen, erklären das Szenario und
+          leiten dich anschließend zum Prototyp weiter.
+          </p>
+          <button class="primary-btn press" @click="step = 'vorbefragung'">Weiter</button>
+        </div>
       </div>
 
-      <!-- 2. Vorbefragung Stage (ordnet die Person einem Persona-Typ zu) -->
+      <!-- 2. Vorbefragung (ordnet die Person einem Persona-Typ zu) -->
       <Vorbefragung v-if="step === 'vorbefragung'" @complete="onVorbefragungComplete" />
 
-      <!-- 3. Szenario Stage -->
+      <!-- 3. Szenario -->
       <Szenario v-if="step === 'szenario'" @continue="step = 'prototype'" />
 
-      <!-- 4. Prototype Stage -->
-      <Prototype
-        v-if="step === 'prototype'"
-        :userData="userData"
-        :assignedPersona="userData.persona"
-        @finish="onPrototypeComplete"
+      <!-- 5. Nachbefragung -->
+      <Nachbefragung
+        v-if="step === 'survey'"
+        :loading="loading"
+        :done="submitted"
+        @complete="onNachbefragungComplete"
       />
-
-      <!-- 5. Exit Survey Stage -->
-      <div v-if="step === 'survey'" class="h-full overflow-y-auto p-6 flex flex-col bg-[var(--bg)]">
-        <p class="eyebrow">Fast geschafft</p>
-        <h1 class="font-display text-[24px] text-[var(--ink)] mb-3">Final Feedback</h1>
-
-        <div class="card mb-6">
-          <label class="field-label">How did you feel about the privacy settings?</label>
-          <textarea
-            v-model="userData.feedback"
-            placeholder="How did you feel about the privacy settings?"
-            class="field h-32 resize-none"
-          ></textarea>
-        </div>
-
-        <div class="grow"></div>
-        <button class="primary-btn press" :class="{ 'success-btn': !loading }" @click="submitToSupabase" :disabled="loading">
-          {{ loading ? 'Saving...' : 'Submit Study' }}
-        </button>
-      </div>
-
-      <!-- SUCCESS TOAST -->
-      <Transition name="toast">
-        <div v-if="submitted" class="toast">
-          <CheckIcon /> Studie gespeichert
-        </div>
-      </Transition>
     </div>
+
+    <!-- ============ PROTOTYPE-STAGE ============
+         Nur der interaktive App-Prototyp läuft im Smartphone-Rahmen. -->
+    <div v-else class="min-h-screen flex items-center justify-center p-4 phone-stage">
+      <div class="w-full max-w-[375px] h-[700px] bg-white rounded-[3rem] shadow-2xl overflow-hidden relative border-[8px] border-gray-800">
+        <Prototype
+          :assignedPersona="userData.persona"
+          @finish="onPrototypeComplete"
+          @restart="onRestartStudy"
+        />
+      </div>
+    </div>
+
+    <!-- SUCCESS TOAST -->
+    <Transition name="toast">
+      <div v-if="toastVisible" class="toast">
+        <CheckIcon /> Studie gespeichert
+      </div>
+    </Transition>
   </div>
 </template>
 
@@ -62,20 +61,23 @@ import { ref, reactive, h } from 'vue';
 import Prototype from './components/Prototype.vue';
 import Vorbefragung from './components/Vorbefragung.vue';
 import Szenario from './components/Szenario.vue';
+import Nachbefragung from './components/Nachbefragung.vue';
 import { supabase } from './supabase';
 
 const step = ref('briefing');
 const loading = ref(false);
-const submitted = ref(false);
+const submitted = ref(false);   // true, sobald die Nachbefragung erfolgreich gespeichert wurde
+const toastVisible = ref(false);
+
 const userData = reactive({
-  name: '',
-  age: null,
-  feedback: '',
   settings: {},
   // aus der Vorbefragung:
   persona: '',
   vorbefragungScore: null,
   vorbefragungAnswers: [],
+  // aus der Nachbefragung:
+  nachbefragungAnswers: [],
+  feedback: '',
 });
 
 const CheckIcon = () =>
@@ -95,24 +97,44 @@ const onPrototypeComplete = (finalSettings) => {
   step.value = 'survey';
 };
 
+// "Studie neu starten" im Prototyp-Menü: der komplette Prototype wird unmountet
+// (dadurch verliert er automatisch seinen internen Zustand) und der Proband
+// muss die Vorbefragung zwingend erneut vollständig ausfüllen.
+const onRestartStudy = () => {
+  userData.persona = '';
+  userData.vorbefragungScore = null;
+  userData.vorbefragungAnswers = [];
+  userData.nachbefragungAnswers = [];
+  userData.feedback = '';
+  userData.settings = {};
+  submitted.value = false;
+  step.value = 'vorbefragung';
+};
+
+const onNachbefragungComplete = async (result) => {
+  userData.nachbefragungAnswers = result.answers;
+  userData.feedback = result.feedback;
+  await submitToSupabase();
+};
+
 const submitToSupabase = async () => {
   loading.value = true;
   const { error } = await supabase.from('study_data').insert([{
-    participant_name: userData.name,
-    age: userData.age,
     persona: userData.persona,
     pretest_score: userData.vorbefragungScore,
     pretest_answers: userData.vorbefragungAnswers,
+    posttest_answers: userData.nachbefragungAnswers,
+    exit_feedback: userData.feedback,
     camera_enabled: userData.settings.camera,
     gps_enabled: userData.settings.gps,
     mic_enabled: userData.settings.mic,
     temp_enabled: userData.settings.temp,
-    exit_feedback: userData.feedback,
   }]);
   loading.value = false;
   if (!error) {
     submitted.value = true;
-    window.setTimeout(() => { submitted.value = false; }, 2600);
+    toastVisible.value = true;
+    window.setTimeout(() => { toastVisible.value = false; }, 2600);
   } else {
     alert('Fehler beim Speichern: ' + error.message);
   }
@@ -121,54 +143,83 @@ const submitToSupabase = async () => {
 
 <style scoped>
 .app-root {
-  --bg: #F5F2EC;
-  --surface: #FFFFFF;
-  --surface-alt: #EFEAE0;
-  --ink: #1C2420;
-  --ink-soft: #5B6B63;
-  --border: #E4DECF;
-  --primary: #1F5749;
-  --primary-soft: #E3EEE8;
   font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
-  color: var(--ink);
 }
 .font-display { font-family: 'Fraunces', ui-serif, Georgia, serif; font-weight: 600; }
 
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap');
 
-.eyebrow { font-size: 11px; font-weight: 600; letter-spacing: .06em; color: var(--primary); text-transform: uppercase; margin-bottom: 6px; }
-
-.card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 18px;
-  padding: 18px;
-  box-shadow: 0 1px 2px rgba(28,36,32,.04);
+/* ============ Website-Stages: gemeinsames Theme ============ */
+.site {
+  --bg: #f8fafc;
+  --card-bg: #ffffff;
+  --ink: #0f172a;
+  --ink-soft: #475569;
+  --ink-muted: #94a3b8;
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --primary-disabled: #cbd5e1;
+  --border: #e2e8f0;
+  --ring: rgba(37, 99, 235, 0.15);
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--ink);
 }
 
-.field-label { display: block; font-size: 11.5px; font-weight: 600; color: var(--ink-soft); margin-bottom: 5px; }
-.field {
-  width: 100%; background: var(--surface-alt); border: 1px solid var(--border);
-  border-radius: 10px; padding: 10px 12px; font-size: 14px; color: var(--ink);
+.eyebrow {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--primary);
+  margin-bottom: 0.25rem;
 }
-.field::placeholder { color: #9AA39A; }
-.field:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-soft); }
+
+.site-page {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 64px 24px 72px;
+}
+.site-page-inner {
+  width: 100%;
+  max-width: 600px;
+}
 
 .primary-btn {
-  width: 100%; padding: 15px; border-radius: 14px;
-  background: var(--primary); color: #fff;
-  font-weight: 600; font-size: 13px; letter-spacing: .02em; text-align: center;
+  width: 100%;
+  padding: 0.875rem 1.5rem;
+  border-radius: 0.625rem;
+  background-color: var(--primary);
+  color: #ffffff;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  transition: all 0.15s ease;
 }
-.primary-btn:disabled { opacity: .45; }
-.success-btn:not(:disabled) { background: #1F5749; }
+.primary-btn:hover:not(:disabled) {
+  background-color: var(--primary-hover);
+  box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+}
+.primary-btn:disabled { background-color: var(--primary-disabled); color: #94a3b8; cursor: not-allowed; }
 
-.press { transition: transform .15s cubic-bezier(.34,1.56,.64,1), opacity .15s; }
-.press:active:not(:disabled) { transform: scale(.97); opacity: .92; }
+.press { transition: transform .15s cubic-bezier(.34,1.56,.64,1); }
+.press:active:not(:disabled) { transform: scale(.98); }
 
+/* ============ Prototyp-Stage: Smartphone-Rahmen ============ */
+.phone-stage {
+  background: #cbd5e1;
+}
+
+/* ============ Toast (Seiten-Ebene, nicht mehr an die Handy-Box gebunden) ============ */
 .toast {
-  position: absolute; left: 50%; bottom: 22px; transform: translateX(-50%);
-  z-index: 50; display: flex; align-items: center; gap: 6px;
-  background: var(--ink); color: #fff; font-size: 12.5px; font-weight: 500;
+  position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%);
+  z-index: 999; display: flex; align-items: center; gap: 6px;
+  background: var(--ink, #0f172a); color: #fff; font-size: 12.5px; font-weight: 500;
   padding: 10px 16px; border-radius: 999px; box-shadow: 0 8px 20px rgba(0,0,0,.25);
 }
 .toast-enter-active { transition: opacity .2s ease, transform .25s cubic-bezier(.34,1.56,.64,1); }
