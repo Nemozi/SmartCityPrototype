@@ -84,8 +84,8 @@
           </div>
 
           <div class="card mb-4">
-            <h3 class="font-display text-[17px] text-[var(--ink)] mb-2">Toll dass du mitmachst</h3>
-            <p class="text-[14px] leading-relaxed text-[var(--ink-soft)]">Wir sammeln einige Daten um deinen bestmöglichen Schutz zu garantieren. Keine Sorge, deine Daten sind bei uns sicher !</p>
+            <h3 class="font-display text-[17px] text-[var(--ink)] mb-2">Toll, dass du mitmachst</h3>
+            <p class="text-[14px] leading-relaxed text-[var(--ink-soft)]">Wir sammeln einige Daten um deinen bestmöglichen Schutz zu garantieren, keine Sorge, deine Daten sind bei uns sicher!</p>
             
           </div>
 
@@ -110,7 +110,7 @@
             <p class="text-[13px] leading-relaxed text-[var(--ink-soft)]">
 Wir fragen deine persönlichen Daten ab, um dir Echtzeit-Informationen über deine aktuelle Infektionsgefahr anzeigen zu können. Mehr Daten bedeuten genauere Analysen für dich.            </p>
             <p class="text-[13px] leading-relaxed text-[var(--ink-soft)] flex gap-2" >
-              <button class="link-btn text-[11px]" @click="openPopup(6)"> Wie verhalte ich mich richtig im Falle von erhöter Infektionsgefahr?</button>
+              <button class="link-btn text-[11px]" @click="openPopup(6)"> Wie verhalte ich mich richtig im Falle von erhöhter Infektionsgefahr?</button>
 
             </p>
           </div>
@@ -143,7 +143,7 @@ Wir fragen deine persönlichen Daten ab, um dir Echtzeit-Informationen über dei
             <div class="space-y-2.5">
               <p class="text-[13px] leading-relaxed text-[var(--ink-soft)] flex gap-2">
                 <span class="num-dot">1</span>
-                  Echtzeitinformationen über ihre Infektionsgefahr.              
+                  Echtzeitinformationen über Ihre Infektionsgefahr.              
                 </p>
               <p class="text-[13px] leading-relaxed text-[var(--ink-soft)] flex gap-2">
                 <span class="num-dot">2</span>
@@ -151,7 +151,7 @@ Wir fragen deine persönlichen Daten ab, um dir Echtzeit-Informationen über dei
               </p>
               <p class="text-[13px] leading-relaxed text-[var(--ink-soft)] flex gap-2" >
                 <span class="num-dot">3</span>
-              <button class="link-btn text-[11px]" @click="openPopup(6)"> Wie verhalte ich mich richtig im Falle von erhöter Infektionsgefahr?</button>
+              <button class="link-btn text-[11px]" @click="openPopup(6)"> Wie verhalte ich mich richtig im Falle von erhöhter Infektionsgefahr?</button>
 
               </p>
             </div>
@@ -218,7 +218,7 @@ Wir fragen deine persönlichen Daten ab, um dir Echtzeit-Informationen über dei
               </div>
 
               <button class="report-btn press mt-4" @click="reportInfection">
-                <span>Prototypen beenden</span>
+                <span>Prototyp beenden</span>
               </button>
             </div>
           </Transition>
@@ -238,7 +238,7 @@ Wir fragen deine persönlichen Daten ab, um dir Echtzeit-Informationen über dei
             <div class="space-y-2.5">
               <p class="text-[13px] leading-relaxed text-[var(--ink-soft)] flex gap-2">
                 <span class="num-dot">1</span>
-                Echtzeitinformation über die an ihren Standorten vorherrschende Infektionsgefahr.
+                Echtzeitinformation über die an Ihren Standorten vorherrschende Infektionsgefahr.
               </p>
               <p class="text-[13px] leading-relaxed text-[var(--ink-soft)] flex gap-2">
                 <span class="num-dot">2</span>
@@ -246,7 +246,7 @@ Wir fragen deine persönlichen Daten ab, um dir Echtzeit-Informationen über dei
               </p>
               <p class="text-[13px] leading-relaxed text-[var(--ink-soft)] flex gap-2" >
                 <span class="num-dot">3</span>
-              <button class="link-btn text-[11px]" @click="openPopup(6)"> Wie verhalte ich mich richtig im Falle von erhöter Infektionsgefahr?</button>
+              <button class="link-btn text-[11px]" @click="openPopup(6)"> Wie verhalte ich mich richtig im Falle von erhöhter Infektionsgefahr?</button>
 
               </p>
             </div>
@@ -280,7 +280,7 @@ Wir fragen deine persönlichen Daten ab, um dir Echtzeit-Informationen über dei
           </div>
 
           <button class="report-btn press" @click="reportInfection">
-            <span>Prototypen schliessen</span>
+            <span>Prototyp beenden</span>
           </button>
         </div>
       </main>
