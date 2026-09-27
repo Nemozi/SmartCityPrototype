@@ -17,7 +17,7 @@
         <Transition name="menu">
           <div v-if="menuOpen" class="nav-menu">
             <button class="nav-menu-item press" @click="restartPrototype">
-              <RestartIcon/> Neu starten
+              <RestartIcon/> Einstellungen zurücksetzen 
             </button>
           </div>
         </Transition>
@@ -59,9 +59,6 @@
             </ul>
           </div>
 
-          <!-- Manuelle Profilwahl: nur relevant, wenn diese Komponente ohne assignedPersona
-               (z. B. isoliert zum Testen) eingebunden wird. Bei zugewiesenem Persona
-               überspringt onMounted() diesen Screen automatisch. -->
           <div class="space-y-2.5 pt-1">
             <p class="text-[11px] font-semibold uppercase tracking-wide text-[var(--ink-soft)] px-1 mb-1">Profil zum Testen wählen</p>
             <button v-for="p in personas" :key="p.id" class="persona-card press" @click="startPath(p.id)">
@@ -86,19 +83,18 @@
           <div class="card mb-4">
             <h3 class="font-display text-[17px] text-[var(--ink)] mb-2">Toll, dass du mitmachst</h3>
             <p class="text-[14px] leading-relaxed text-[var(--ink-soft)]">Wir sammeln einige Daten um deinen bestmöglichen Schutz zu garantieren, keine Sorge, deine Daten sind bei uns sicher!</p>
-            
           </div>
 
           <div class="card flex justify-between items-center">
             <div>
-              <span class="block text-left text-[14px] font- semibold text-[var(--ink)]">Einwilligen</span>
+              <span class="block text-left text-[14px] font-semibold text-[var(--ink)]">Einwilligen</span>
               <button class="link-btn text-[11px]" @click="openPopup(5)">Mehr Informationen</button>
             </div>
             <ToggleSwitch v-model="settings.consent" size="lg"/>
           </div>
 
           <div class="grow"></div>
-          <PrimaryButton class="mt-6"  :disabled="!settings.consent" @click="save('home')" >Speichern</PrimaryButton>
+          <PrimaryButton class="mt-6" :disabled="!settings.consent" @click="save('home')">Speichern</PrimaryButton>
         </div>
 
         <!-- P9: SKEPTIKER -->
@@ -108,12 +104,11 @@
           <div class="card mb-4">
             <h3 class="font-display text-[16px] text-[var(--ink)] mb-2">Persönliche Daten teilen</h3>
             <p class="text-left text-[13px] leading-relaxed text-[var(--ink-soft)]">
-              
-              Wir fragen deine persönlichen Daten ab, um dir Echtzeit-Informationen über deine aktuelle Infektionsgefahr anzeigen zu können. Mehr Daten bedeuten genauere Analysen für dich.            </p>
+              Wir fragen deine persönlichen Daten ab, um dir Echtzeit-Informationen über deine aktuelle Infektionsgefahr anzeigen zu können. Mehr Daten bedeuten genauere Analysen für dich.
+            </p>
             <br>
-              <p class="text-[13px] leading-relaxed text-[var(--ink-soft)] flex gap-2" >
+            <p class="text-[13px] leading-relaxed text-[var(--ink-soft)] flex gap-2">
               <button class="link-btn text-[11px]" @click="openPopup(6)"> Wie verhalte ich mich richtig im Falle von erhöhter Infektionsgefahr?</button>
-
             </p>
           </div>
 
@@ -136,30 +131,109 @@
           <PrimaryButton class="mt-6" @click="save('home')">Speichern</PrimaryButton>
         </div>
 
-        <!-- P8: MISSTRAUEND — Freigabe & Live-Schutzstatus auf derselben Seite -->
-        <div v-if="currentScreen === 'p8'" class="flex flex-col min-h-full">
+        <!-- P8: MISSTRAUEND — Status, Live-Teilen & Berechtigungs-Schalter -->
+        <div v-if="currentScreen === 'p8'" class="flex flex-col min-h-full space-y-4">
           <StepDots :step="1"/>
 
+          <!-- STATUS / GEFAHRENBEREICHE -->
+          <div 
+            class="risk-card transition-all duration-300"
+            :class="{ 'ring-2 ring-[var(--danger)] bg-[var(--danger-soft)]': sharingActive, 'opacity-90 grayscale-[0.15]': !sharingActive }"
+          >
+            <div class="flex items-center justify-between mb-3.5">
+              <div class="flex items-center gap-2">
+                <span v-if="sharingActive" class="live-dot"></span>
+                <WarnIcon v-else class="text-[var(--ink-soft)]"/>
+                <h3 class="text-[11px] font-semibold uppercase tracking-wide" :class="sharingActive ? 'text-[var(--danger)]' : 'text-[var(--ink-soft)]'">
+                  {{ sharingActive ? 'Live-Schutzstatus aktiv' : 'Letzte bekannte Daten' }}
+                </h3>
+              </div>
+              
+              <span 
+                class="text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider"
+                :class="sharingActive ? 'bg-[var(--danger)] text-white animate-pulse' : 'bg-[var(--surface-alt)] text-[var(--ink-soft)] border border-[var(--border)]'"
+              >
+                {{ sharingActive ? 'LIVE' : 'Verlauf' }}
+              </span>
+            </div>
+            
+            <div class="space-y-2.5 text-[13px]">
+              <div class="border-b border-[var(--danger)]/12 pb-2">
+                <div class="flex justify-between items-center gap-2">
+                  <span class="text-[var(--ink-soft)]">{{ sharingActive ? 'Aktueller Standort' : 'Letzter Standort' }}</span>
+                  <span v-if="settings.gps" class="font-semibold text-[var(--ink)]">U-Bahnhof Hermannstraße</span>
+                </div>
+                <div v-if="!settings.gps" class="locked mt-1.5"><LockIcon/> <span>Erlaubnis nicht erteilt, um Standort abzufragen</span></div>
+              </div>
+
+              <div class="border-b border-[var(--danger)]/12 pb-2">
+                <div class="flex justify-between items-center gap-2">
+                  <span class="text-[var(--ink-soft)]">Infektionsgefahr</span>
+                  <span v-if="settings.temp" class="risk-pill">Mittel</span>
+                </div>
+                <div v-if="!settings.temp" class="locked mt-1.5"><LockIcon/> <span>Erlaubnis nicht erteilt, um Temperatur abzufragen</span></div>
+              </div>
+
+              <div class="border-b border-[var(--danger)]/12 pb-2">
+                <div class="flex justify-between items-center gap-2">
+                  <span class="text-[var(--ink-soft)]">Virus-Art</span>
+                  <span v-if="settings.mic" class="font-semibold text-[var(--ink)]">Grippe</span>
+                </div>
+                <div v-if="!settings.mic" class="locked mt-1.5"><LockIcon/> <span>Erlaubnis nicht erteilt, um Mikrofon abzufragen</span></div>
+              </div>
+
+              <div class="pt-1">
+                <p class="text-[var(--ink-soft)] mb-1.5">Symptome in der Umgebung</p>
+                <div v-if="settings.camera" class="flex flex-wrap gap-1.5">
+                  <span v-for="s in symptoms" :key="s" class="chip">{{ s }}</span>
+                </div>
+                <div v-else class="locked"><LockIcon/> <span>Erlaubnis nicht erteilt, um Kamera abzufragen</span></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- FUNKTIONEN / INFOS -->
           <div class="card">
             <h3 class="text-[13px] font-semibold text-[var(--ink)] mb-3">Funktionen</h3>
             <div class="space-y-2.5">
-              <p class=" text-left text-[13px] leading-relaxed text-[var(--ink-soft)] flex gap-2">
+              <p class="text-left text-[13px] leading-relaxed text-[var(--ink-soft)] flex gap-2">
                 <span class="num-dot">1</span>
-                  Echtzeitinformationen über Ihre Infektionsgefahr.              
-                </p>
-              <p class=" text-left text-[13px] leading-relaxed text-[var(--ink-soft)] flex gap-2">
-                <span class="num-dot">2</span>
-                Sie können ihr Infektionsrisiko live überwachen, bei erhöhtem Risiko werden sie benachrichtigt.
+                Echtzeitinformationen über Ihre Infektionsgefahr.              
               </p>
-              <p class="text-[13px] leading-relaxed text-[var(--ink-soft)] flex gap-2" >
+              <p class="text-left text-[13px] leading-relaxed text-[var(--ink-soft)] flex gap-2">
+                <span class="num-dot">2</span>
+                Sie können Ihr Infektionsrisiko live überwachen. Bei erhöhtem Risiko werden Sie benachrichtigt.
+              </p>
+              <p class="text-[13px] leading-relaxed text-[var(--ink-soft)] flex gap-2">
                 <span class="num-dot">3</span>
-              <button class="link-btn text-left text-[11px]" @click="openPopup(6)"> Wie verhalte ich mich richtig im Falle von erhöhter Infektionsgefahr?</button>
-
+                <button class="link-btn text-left text-[11px]" @click="openPopup(6)">
+                  Wie verhalte ich mich richtig im Falle von erhöhter Infektionsgefahr?
+                </button>
               </p>
             </div>
           </div>
 
-          <div class="space-y-2.5">
+          <!-- TEILEN-BUTTON & PROTOTYP-BEENDEN-BUTTON -->
+          <div>
+            <button class="sharing-btn press" :class="{ 'is-active': sharingActive }" @click="sharingActive = !sharingActive">
+              <span class="live-dot" v-if="sharingActive"></span>
+              {{ sharingActive ? 'Live-Teilen läuft · Beenden' : 'Live-Teilen starten' }}
+            </button>
+
+            <Transition name="expand">
+              <div v-if="sharingActive" class="mt-3">
+                <button class="report-btn press" @click="reportInfection">
+                  <span>Prototyp beenden</span>
+                </button>
+              </div>
+            </Transition>
+          </div>
+
+          <!-- SCHALTER FÜR BERECHTIGUNGEN -->
+          <div class="space-y-2.5 pt-2">
+            <p class="text-[11px] font-semibold uppercase tracking-wide text-[var(--ink-soft)] px-1">
+              Berechtigungen verwalten
+            </p>
             <div v-for="(val, key) in sensorMap" :key="key" class="card flex justify-between items-center !py-3.5">
               <div class="flex items-center gap-3.5">
                 <span class="sensor-icon">
@@ -174,92 +248,14 @@
             </div>
           </div>
 
-          <button class="sharing-btn press mt-5" :class="{ 'is-active': sharingActive }" @click="sharingActive = !sharingActive">
-            <span class="live-dot" v-if="sharingActive"></span>
-            {{ sharingActive ? 'Teilen läuft · Beenden' : 'Teilen starten' }}
-          </button>
-
-          <Transition name="expand">
-            <div v-if="sharingActive" class="mt-4">
-              <div class="risk-card">
-                <div class="flex items-center gap-2 mb-3.5">
-                  <span class="live-dot"></span>
-                  <h3 class="text-[11px] font-semibold uppercase tracking-wide text-[var(--danger)]">Live-Schutzstatus</h3>
-                </div>
-                <div class="text-[13px]">
-
-                  <TransitionGroup name="fade-row" tag="div" class="contents space-y-2.5">
-                    <div key="loc" class="border-b border-[var(--danger)]/12 pb-2">
-                      <div class="flex justify-between items-center gap-2">
-                        <span class="text-[var(--ink-soft)]">Location</span>
-                        <span v-if="settings.gps" class="font-semibold text-[var(--ink)]">U-Bahnhof Hermannstraße</span>
-                      </div>
-                      <div v-if="!settings.gps" class="locked mt-1.5"><LockIcon/> <span>Erlaubnis nicht erteilt um Standort abzufragen</span></div>
-                    </div>
-
-                    <div key="risk" class="border-b border-[var(--danger)]/12 pb-2">
-                      <div class="flex justify-between items-center gap-2">
-                        <span class="text-[var(--ink-soft)]">Infektionsgefahr</span>
-                        <span v-if="settings.temp" class="risk-pill">Mittel</span>
-                      </div>
-                      <div v-if="!settings.temp" class="locked mt-1.5"><LockIcon/> <span>Erlaubnis nicht erteilt um Temperatur abzufragen</span></div>
-                    </div>
-
-                    <div key="virus" class="border-b border-[var(--danger)]/12 pb-2">
-                      <div class="flex justify-between items-center gap-2">
-                        <span class="text-[var(--ink-soft)]">Virus-Art</span>
-                        <span v-if="settings.mic" class="font-semibold text-[var(--ink)]">Grippe</span>
-                      </div>
-                      <div v-if="!settings.mic" class="locked mt-1.5"><LockIcon/> <span>Erlaubnis nicht erteilt um Mikrofon abzufragen</span></div>
-                    </div>
-
-                    <div key="symptoms" class="pt-1">
-                      <p class="text-[var(--ink-soft)] mb-1.5">Symptome</p>
-                      <div v-if="settings.camera" class="flex flex-wrap gap-1.5">
-                        <span v-for="s in symptoms" :key="s" class="chip">{{ s }}</span>
-                      </div>
-                      <div v-else class="locked"><LockIcon/> <span>Erlaubnis nicht erteilt um Kamera abzufragen</span></div>
-                    </div>
-                  </TransitionGroup>
-
-                </div>
-              </div>
-
-              <button class="report-btn press mt-4" @click="reportInfection">
-                <span>Prototyp beenden</span>
-              </button>
-            </div>
-          </Transition>
-
-          <div class="grow mt-4"></div>
+          <div class="grow pb-4"></div>
         </div>
 
         <!-- HOME -->
         <div v-if="currentScreen === 'home'" class="space-y-4">
           <div>
             <p class="eyebrow">Ihr Status heute</p>
-            <h1 class="font-display text-[24px] text-[var(--ink)] leading-tight">Aktuelle Übersicht</h1>
           </div>
-
-          <div class="card">
-            <h3 class="text-[13px] font-semibold text-[var(--ink)] mb-3">Funktionen</h3>
-            <div class="space-y-2.5">
-              <p class="text-[13px] leading-relaxed text-[var(--ink-soft)] flex gap-2">
-                <span class="num-dot">1</span>
-                Echtzeitinformation über die an Ihren Standorten vorherrschende Infektionsgefahr.
-              </p>
-              <p class="text-[13px] leading-relaxed text-[var(--ink-soft)] flex gap-2">
-                <span class="num-dot">2</span>
-                Bei erhöhtem Risiko werden sie benachrichtigt.
-              </p>
-              <p class="text-[13px] leading-relaxed text-[var(--ink-soft)] flex gap-2" >
-                <span class="num-dot">3</span>
-              <button class="link-btn text-[11px]" @click="openPopup(6)"> Wie verhalte ich mich richtig im Falle von erhöhter Infektionsgefahr?</button>
-
-              </p>
-            </div>
-          </div>
-
           <div class="risk-card">
             <div class="flex items-center gap-2 mb-3.5">
               <WarnIcon/>
@@ -295,6 +291,25 @@
                 <div v-else class="locked"><LockIcon/> <span>Erlaubnis nicht erteilt um Kamera abzufragen</span></div>
               </div>
             </div>
+            <button class="eyebrow p-2 underline" @click="adjustPermissions"> Berechtigungen anpassen</button>
+          </div>
+
+          <div class="card">
+            <h3 class="text-[13px] font-semibold text-[var(--ink)] mb-3">Funktionen</h3>
+            <div class="space-y-2.5">
+              <p class="text-[13px] leading-relaxed text-[var(--ink-soft)] flex gap-2">
+                <span class="num-dot">1</span>
+                Echtzeitinformation über die an Ihren Standorten vorherrschende Infektionsgefahr.
+              </p>
+              <p class="text-[13px] leading-relaxed text-[var(--ink-soft)] flex gap-2">
+                <span class="num-dot">2</span>
+                Bei erhöhtem Risiko werden sie benachrichtigt.
+              </p>
+              <p class="text-[13px] leading-relaxed text-[var(--ink-soft)] flex gap-2">
+                <span class="num-dot">3</span>
+                <button class="link-btn text-[11px]" @click="openPopup(6)"> Wie verhalte ich mich richtig im Falle von erhöhter Infektionsgefahr?</button>
+              </p>
+            </div>
           </div>
 
           <button class="report-btn press" @click="reportInfection">
@@ -321,14 +336,29 @@
                 <p>
                   Kamera, Mikrofon, Temperatur & GPS-Sensoren: 
                   Diese Daten sind für die Funktionalität der App dringend nötig und werden nicht anderweitig missbraucht.
-                  </p>
+                </p>
               </div>
               <div v-if="activePopup === 6" class="space-y-3">
-                <p class="font-semibold text-[var(--ink)]">Abstand halten, in engen Räumen Maske tragen und regelmäßig Hände waschen.
-                </p>
+                <p class="font-semibold text-[var(--ink)]">Abstand halten, in engen Räumen Maske tragen und regelmäßig Hände waschen.</p>
               </div>
             </div>
             <button class="sheet-close press" @click="activePopup = null">Schließen</button>
+          </div>
+        </Transition>
+      </div>
+    </Transition>
+
+    <!-- INTRO MODAL FÜR MISSTRAUEND (p8) -->
+    <Transition name="backdrop">
+      <div v-if="showIntroModal" class="sheet-backdrop" @click.self="showIntroModal = false">
+        <Transition name="sheet" appear>
+          <div class="sheet" key="intro-sheet">
+            <div class="sheet-handle"></div>
+            <h2 class="font-display text-[18px] text-[var(--ink)] mb-2">Willkommen!</h2>
+            <p class="text-[13.5px] leading-relaxed text-[var(--ink-soft)] pb-4">
+              Du hast die volle Kontrolle über deine Daten und kannst Freigaben jederzeit in Echtzeit steuern. Für aktuelle Warnungen benötigen wir Live-Daten – ohne Freigabe siehst du nur Vergangenheitsdaten.
+            </p>
+            <button class="primary-btn press" @click="showIntroModal = false">Verstanden</button>
           </div>
         </Transition>
       </div>
@@ -347,9 +377,6 @@
 import { ref, reactive, h, onMounted } from 'vue';
 
 const props = defineProps({
-  // Persona-ID aus der Vorbefragung: 'gutgläubig' | 'skeptiker' | 'misstrauend'.
-  // Leer, wenn die Komponente ohne Vorbefragung/App-Flow getestet wird —
-  // dann bleibt die manuelle Profilwahl im Setup-Screen aktiv.
   assignedPersona: { type: String, default: '' },
 });
 
@@ -361,6 +388,7 @@ const menuOpen = ref(false);
 const toast = ref('');
 const transitionName = ref('slide-forward');
 const sharingActive = ref(false);
+const showIntroModal = ref(false);
 
 const settings = reactive({
   persona: '',
@@ -427,10 +455,9 @@ const ToggleSwitch = (props, { emit }) => {
 ToggleSwitch.props = ['modelValue', 'size'];
 ToggleSwitch.emits = ['update:modelValue'];
 
-// const PrimaryButton = (props, { slots, attrs }) => h('button', { class: ['primary-btn', 'press', attrs.class], onClick: attrs.onClick }, slots.default?.());
 const PrimaryButton = (props, { slots, attrs }) => h('button', { 
   class: ['primary-btn', 'press', attrs.class], 
-  disabled: attrs.disabled, // Reicht das disabled-Attribut an HTML weiter
+  disabled: attrs.disabled,
   onClick: (e) => {
     if (attrs.disabled) {
       e.preventDefault();
@@ -439,8 +466,6 @@ const PrimaryButton = (props, { slots, attrs }) => h('button', {
     attrs.onClick?.(e);
   } 
 }, slots.default?.());
-//const BackLink = (props, { attrs }) => h('button', { class: 'back-link press', onClick: attrs.onClick }, [h(ChevronBackIcon), 'Zurück']);
-//const ChevronBackIcon = icon(['M15 6l-6 6 6 6']);
 
 const StepDots = (props) => h('div', { class: 'step-dots' }, [1, 2].map(n =>
   h('span', { class: ['step-dot', n === props.step ? 'active' : ''] })));
@@ -452,7 +477,10 @@ const startPath = (persona) => {
   sharingActive.value = false;
   if (persona === 'gutgläubig') currentScreen.value = 'p6';
   if (persona === 'skeptiker') currentScreen.value = 'p9';
-  if (persona === 'misstrauend') currentScreen.value = 'p8';
+  if (persona === 'misstrauend') {
+    currentScreen.value = 'p8';
+    showIntroModal.value = true;
+  }
 };
 
 const openPopup = (id) => { activePopup.value = id; };
@@ -490,8 +518,6 @@ const restartPrototype = () => {
   settings.gps = true;
   settings.temp = true;
   if (props.assignedPersona) {
-    // Echte Teilnehmer:innen haben ein festes Persona -> direkt wieder dorthin,
-    // statt zur manuellen Auswahl zurückzuspringen.
     startPath(props.assignedPersona);
   } else {
     currentScreen.value = 'setup';
@@ -499,8 +525,20 @@ const restartPrototype = () => {
   showToast('Neu gestartet');
 };
 
-// Bei zugewiesenem Persona (aus der Vorbefragung) den Setup-Screen überspringen
-// und direkt mit dem passenden Pfad starten.
+const adjustPermissions = () => {
+  menuOpen.value = false;
+  activePopup.value = null;
+  transitionName.value = 'slide-forward';
+  sharingActive.value = false;
+
+  const activePersona = props.assignedPersona || settings.persona;
+
+  if (activePersona === 'gutgläubig') currentScreen.value = 'p6';
+  else if (activePersona === 'skeptiker') currentScreen.value = 'p9';
+  else if (activePersona === 'misstrauend') currentScreen.value = 'p8';
+  else currentScreen.value = 'setup';
+};
+
 onMounted(() => {
   if (props.assignedPersona) startPath(props.assignedPersona);
 });
@@ -509,21 +547,14 @@ onMounted(() => {
 <style scoped>
 .primary-btn:disabled,
 .primary-btn[disabled] {
-  background-color: #cecfd090 !important; /* Ein neutrales Grau */
-  color: #2b2b2b8e !important;            /* Hellgraue Schrift */
-  cursor: not-allowed;                  /* Zeigt das "Verboten"-Maus-Symbol */
-  box-shadow: none !important;          /* Entfernt den Schatten */
-  transform: none !important;           /* Deaktiviert den Drück-Effekt (.press) */
-  pointer-events: none;                 /* Blockiert alle Hover- und Klick-Interaktionen komplett */
+  background-color: #cecfd090 !important;
+  color: #2b2b2b8e !important;
+  cursor: not-allowed;
+  box-shadow: none !important;
+  transform: none !important;
+  pointer-events: none;
 }
 
-/* Lesbarkeits-Baseline: Fließtext, Listenpunkte und Buttons sind standardmäßig
-   linksbündig. Browser zentrieren <button>-Inhalte per Default (UA-Stylesheet),
-   das vererbt sich auch in verschachtelte Blockelemente — deshalb der Reset
-   hier statt einzelner "text-left"-Klassen an jeder Stelle. Zentriert bleibt
-   nur, was das bewusst überschreibt: .primary-btn, .report-btn, .sheet-close
-   (Calls-to-Action) sowie die einstelligen Zahlen-Badges (.likert-dot, die
-   dort über Flex-Justify statt text-align zentrieren). */
 p, li, button {
   text-align: left;
 }
@@ -717,7 +748,6 @@ p, li, button {
 .press { transition: transform .15s cubic-bezier(.34,1.56,.64,1), opacity .15s; }
 .press:active { transform: scale(.96); opacity: .9; }
 
-/* toggle */
 :deep(.toggle) { position: relative; border-radius: 999px; transition: background .25s ease; flex-shrink: 0; }
 :deep(.toggle-knob) {
   position: absolute; top: 3px; left: 0; border-radius: 999px; background: #fff;
@@ -726,7 +756,6 @@ p, li, button {
   transition: transform .28s cubic-bezier(.34,1.56,.64,1);
 }
 
-/* bottom sheet */
 .sheet-backdrop {
   position: absolute; inset: 0; z-index: 40;
   background: rgba(20,26,23,.42);
@@ -745,7 +774,6 @@ p, li, button {
   background: var(--surface-alt); color: var(--ink); font-weight: 600; font-size: 13px; text-align: center;
 }
 
-/* toast */
 .toast {
   position: absolute; left: 50%; bottom: 22px; transform: translateX(-50%);
   z-index: 50; display: flex; align-items: center; gap: 6px;
@@ -753,7 +781,6 @@ p, li, button {
   padding: 10px 16px; border-radius: 999px; box-shadow: 0 8px 20px rgba(0,0,0,.25);
 }
 
-/* transitions */
 .slide-forward-enter-active, .slide-forward-leave-active { transition: opacity .22s ease, transform .22s ease; }
 .slide-forward-enter-from { opacity: 0; transform: translateX(14px); }
 .slide-forward-leave-to { opacity: 0; transform: translateX(-14px); }
@@ -770,7 +797,7 @@ p, li, button {
 .toast-enter-from { opacity: 0; transform: translate(-50%, 10px) scale(.9); }
 .toast-leave-to { opacity: 0; transform: translate(-50%, 4px); }
 
-.title{
+.title {
   width: 100%;
   max-width: 100%;
   font-size: clamp(18px, 14cqw, 26px);
