@@ -2,7 +2,6 @@
   <div class="min-h-screen w-full flex justify-center px-6 py-16 bg-[var(--bg)] vf-screen">
     <div class="w-full max-w-[600px]">
       <p class="eyebrow">Vorbefragung</p>
-      <h1 class="font-display text-[28px] text-[var(--ink)] mb-3">Formular</h1>
       <p class="p-4 text-left mb-8 text-[15px] leading-relaxed text-[var(--ink-soft)]">
        Bitte gib an, wie sehr die folgenden Aussagen auf dich zutreffen. 
        <br>

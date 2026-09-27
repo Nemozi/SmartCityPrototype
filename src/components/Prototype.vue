@@ -335,7 +335,7 @@
                 <p class="font-semibold text-[var(--ink)]">Standort, visuelle Umgebungsdaten, Lautstärke, Temperaturdaten</p>
                 <p>
                   Kamera, Mikrofon, Temperatur & GPS-Sensoren: 
-                  Diese Daten sind für die Funktionalität der App dringend nötig und werden nicht anderweitig missbraucht.
+                  Diese Daten sind für die Funktionalität der App nötig.
                 </p>
               </div>
               <div v-if="activePopup === 6" class="space-y-3">
@@ -545,6 +545,8 @@ onMounted(() => {
 </script>
 
 <style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap');
+
 .primary-btn:disabled,
 .primary-btn[disabled] {
   background-color: #cecfd090 !important;
@@ -578,7 +580,6 @@ p, li, button {
 }
 .font-display { font-family: 'Fraunces', ui-serif, Georgia, serif; font-weight: 600; }
 
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap');
 
 .eyebrow { font-size: 11px; font-weight: 600; letter-spacing: .06em; color: var(--primary); text-transform: uppercase; margin-bottom: 4px; }
 

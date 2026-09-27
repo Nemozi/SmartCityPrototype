@@ -60,7 +60,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, h } from 'vue';
+import { ref, reactive, h, watch, onMounted, onUnmounted } from 'vue';
 import Prototype from './components/Prototype.vue';
 import Vorbefragung from './components/Vorbefragung.vue';
 import Szenario from './components/Szenario.vue';
@@ -83,6 +83,19 @@ const userData = reactive({
   feedback: '',
 });
 
+/* ============ AUTO-SAVE (LOCAL STORAGE) ============ */
+// Speichert den Fortschritt automatisch ab, sobald sich Schritt oder Daten ändern
+watch(
+  [step, userData],
+  () => {
+    if (step.value !== 'briefing' && !submitted.value) {
+      localStorage.setItem('study_step', step.value);
+      localStorage.setItem('study_userData', JSON.stringify(userData));
+    }
+  },
+  { deep: true }
+);
+
 const CheckIcon = () =>
   h('svg', { viewBox: '0 0 24 24', fill: 'none', width: 16, height: 16 }, [
     h('path', { d: 'M5 12.5 9.5 17 19 7', stroke: 'currentColor', 'stroke-width': 1.8, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }),
@@ -100,9 +113,7 @@ const onPrototypeComplete = (finalSettings) => {
   step.value = 'survey';
 };
 
-// "Studie neu starten" im Prototyp-Menü: der komplette Prototype wird unmountet
-// (dadurch verliert er automatisch seinen internen Zustand) und der Proband
-// muss die Vorbefragung zwingend erneut vollständig ausfüllen.
+// "Studie neu starten" im Prototyp-Menü
 const onRestartStudy = () => {
   userData.persona = '';
   userData.vorbefragungScore = null;
@@ -111,6 +122,8 @@ const onRestartStudy = () => {
   userData.feedback = '';
   userData.settings = {};
   submitted.value = false;
+  localStorage.removeItem('study_step');
+  localStorage.removeItem('study_userData');
   step.value = 'vorbefragung';
 };
 
@@ -137,22 +150,59 @@ const submitToSupabase = async () => {
   loading.value = false;
   if (!error) {
     submitted.value = true;
+    // Speicher leeren, sobald alles in Supabase gespeichert ist
+    localStorage.removeItem('study_step');
+    localStorage.removeItem('study_userData');
     toastVisible.value = true;
     window.setTimeout(() => { toastVisible.value = false; }, 2600);
   } else {
     alert('Fehler beim Speichern: ' + error.message);
   }
 };
+
+/* ============ BROWSER RELOAD PROTECTION ============ */
+const handleBeforeUnload = (event) => {
+  if (step.value !== 'briefing' && !submitted.value) {
+    event.preventDefault();
+    event.returnValue = ''; // Für Chrome, Firefox & Edge
+    return '';              // Für Safari Desktop
+  }
+};
+
+onMounted(() => {
+  // 1. Wiederherstellung aus localStorage (falls die Seite neu geladen wurde)
+  const savedStep = localStorage.getItem('study_step');
+  const savedData = localStorage.getItem('study_userData');
+
+  if (savedStep && savedData) {
+    try {
+      step.value = savedStep;
+      Object.assign(userData, JSON.parse(savedData));
+    } catch (e) {
+      console.error('Fehler beim Laden des gespeicherten Zustands:', e);
+    }
+  }
+
+  // 2. Warn-Popup bei Reload/Schließen anhängen
+  window.addEventListener('beforeunload', handleBeforeUnload);
+  window.onbeforeunload = handleBeforeUnload;
+});
+
+onUnmounted(() => {
+  window.removeEventListener('beforeunload', handleBeforeUnload);
+  window.onbeforeunload = null;
+});
 </script>
 
 <style scoped>
-.app-root {
-  font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
-}
-.font-display { font-family: 'Fraunces', ui-serif, Georgia, serif; font-weight: 600; }
-
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap');
 
+.app-root {
+  font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  overscroll-behavior-y: contain;
+}
+
+.font-display { font-family: 'Fraunces', ui-serif, Georgia, serif; font-weight: 600; }
 /* ============ Website-Stages: gemeinsames Theme ============ */
 .site {
   --bg: #f8fafc;
