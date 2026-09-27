@@ -83,7 +83,6 @@ const questions = [
   'Ich kann mir vorstellen, eine ähnliche Anwendung zur Reduktion von Virusinfektionen zu nutzen.',
   'Ich wäre bereit, persönliche Informationen zu teilen, wenn dadurch ein Nutzen für die Gesellschaft entsteht.',
   'Ich fand diese Anwendung sehr umständlich zu benutzen.',
-  'Für so einen Anwendungsfall bin ich deutlich bereiter, meine persönlichen Daten freizugeben als üblich.',
   'Ich wäre bereit, persönliche Informationen zu teilen, wenn ich persönlich einen Nutzen daraus ziehe.',
 ];
 

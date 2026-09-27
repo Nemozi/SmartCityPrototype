@@ -124,6 +124,7 @@ const submitToSupabase = async () => {
   loading.value = true;
   const { error } = await supabase.from('study_data').insert([{
     persona: userData.persona,
+    consent_given: userData.settings.consent,
     pretest_score: userData.vorbefragungScore,
     pretest_answers: userData.vorbefragungAnswers,
     posttest_answers: userData.nachbefragungAnswers,
