@@ -294,7 +294,7 @@ Wir fragen deine persönlichen Daten ab, um dir Echtzeit-Informationen über dei
             <div class="sheet-handle"></div>
             <h2 class="font-display text-[19px] text-[var(--ink)] mb-4">Mehr Informationen</h2>
             <div class="text-[14px] leading-relaxed text-[var(--ink-soft)] space-y-3">
-              <p v-if="activePopup === 1">Über den Temperatursensor können wir die Verbreitungswahrscheinlichkeit von Viren besser abschätzen, was unsere Prognosen verbessert.</p>
+              <p v-if="activePopup === 1">Über den Temperatursensor können wir die Verbreitungswahrscheinlichkeit von Viren besser abschätzen.</p>
               <p v-if="activePopup === 2">Über die Audioanalyse Ihrer Umgebung können wir die Infektionsgefahr genauer ermitteln.</p>
               <p v-if="activePopup === 3">Über Ihre Standortdaten können wir Sie darüber informieren, ob Sie einem Infektions-Hotspot ausgesetzt waren oder mit infizierten Personen Kontakt hatten.</p>
               <p v-if="activePopup === 4">Wir sammeln Ihre Kameradaten, um potentiell infizierte Personen in Ihrer Umgebung erkennen zu können und Sie frühzeitig zu warnen.</p>

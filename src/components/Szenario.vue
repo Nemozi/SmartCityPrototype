@@ -21,6 +21,13 @@
             real und die App eine echte Möglichkeit zum Schutz für dich und andere.
           </p>
         </div>
+        <div class="card">
+          <h3 class="section-title">Erklärung zu Sensoren</h3>
+            Einige in der App genutzten Sensoren (z. B. Kamera- & Temperaturanalyse) sind für diesen Prototypen simuliert. Bitte nimm für den Test an, dass dein Smartphone diese Fähigkeiten bereits besitzt.      
+          <p class="section-text">
+            
+          </p>
+        </div>
 
         <div class="card">
           <h3 class="section-title">Funktionsweise</h3>
