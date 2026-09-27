@@ -11,11 +11,11 @@
       <div v-if="step === 'briefing'" class="site-page">
         <div class="site-page-inner">
           <p class="eyebrow">Vor dem Start</p>
-          <h1 class="font-display text-2xl sm:text-[28px] leading-tight text-[var(--ink)] mb-3">
+          <h1 class=" font-display text-2xl sm:text-[28px] leading-tight text-[var(--ink)] mb-3">
             Hallo
           </h1>          
-          <p>Wilkommen zu dieser Studie von Studenten der HTW Berlin </p>
-          <p class="p-4 mb-10 text-[15px] leading-relaxed text-[var(--ink-soft)]">
+          <p class="text-left p-4 mb-10 text-[20px] leading-relaxed ">Wilkommen zu dieser Studie von Studenten der HTW Berlin </p>
+          <p class=" text-left p-4 mb-10 text-[15px] leading-relaxed text-[var(--ink-soft)]">
           Im nächsten Schritt stellen wir dir ein paar kurze Fragen, erklären das Szenario und
           leiten dich anschließend zum Prototyp weiter.
           </p>

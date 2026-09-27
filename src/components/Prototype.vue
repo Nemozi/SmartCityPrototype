@@ -107,9 +107,11 @@
 
           <div class="card mb-4">
             <h3 class="font-display text-[16px] text-[var(--ink)] mb-2">Persönliche Daten teilen</h3>
-            <p class="text-[13px] leading-relaxed text-[var(--ink-soft)]">
-Wir fragen deine persönlichen Daten ab, um dir Echtzeit-Informationen über deine aktuelle Infektionsgefahr anzeigen zu können. Mehr Daten bedeuten genauere Analysen für dich.            </p>
-            <p class="text-[13px] leading-relaxed text-[var(--ink-soft)] flex gap-2" >
+            <p class="text-left text-[13px] leading-relaxed text-[var(--ink-soft)]">
+              
+              Wir fragen deine persönlichen Daten ab, um dir Echtzeit-Informationen über deine aktuelle Infektionsgefahr anzeigen zu können. Mehr Daten bedeuten genauere Analysen für dich.            </p>
+            <br>
+              <p class="text-[13px] leading-relaxed text-[var(--ink-soft)] flex gap-2" >
               <button class="link-btn text-[11px]" @click="openPopup(6)"> Wie verhalte ich mich richtig im Falle von erhöhter Infektionsgefahr?</button>
 
             </p>
@@ -141,17 +143,17 @@ Wir fragen deine persönlichen Daten ab, um dir Echtzeit-Informationen über dei
           <div class="card">
             <h3 class="text-[13px] font-semibold text-[var(--ink)] mb-3">Funktionen</h3>
             <div class="space-y-2.5">
-              <p class="text-[13px] leading-relaxed text-[var(--ink-soft)] flex gap-2">
+              <p class=" text-left text-[13px] leading-relaxed text-[var(--ink-soft)] flex gap-2">
                 <span class="num-dot">1</span>
                   Echtzeitinformationen über Ihre Infektionsgefahr.              
                 </p>
-              <p class="text-[13px] leading-relaxed text-[var(--ink-soft)] flex gap-2">
+              <p class=" text-left text-[13px] leading-relaxed text-[var(--ink-soft)] flex gap-2">
                 <span class="num-dot">2</span>
                 Sie können ihr Infektionsrisiko live überwachen, bei erhöhtem Risiko werden sie benachrichtigt.
               </p>
               <p class="text-[13px] leading-relaxed text-[var(--ink-soft)] flex gap-2" >
                 <span class="num-dot">3</span>
-              <button class="link-btn text-[11px]" @click="openPopup(6)"> Wie verhalte ich mich richtig im Falle von erhöhter Infektionsgefahr?</button>
+              <button class="link-btn text-left text-[11px]" @click="openPopup(6)"> Wie verhalte ich mich richtig im Falle von erhöhter Infektionsgefahr?</button>
 
               </p>
             </div>
@@ -187,22 +189,28 @@ Wir fragen deine persönlichen Daten ab, um dir Echtzeit-Informationen über dei
                 <div class="text-[13px]">
 
                   <TransitionGroup name="fade-row" tag="div" class="contents space-y-2.5">
-                    <div key="loc" class="flex justify-between border-b border-[var(--danger)]/12 pb-2">
-                      <span class="text-[var(--ink-soft)]">Location</span>
-                      <span v-if="settings.gps" class="font-semibold text-[var(--ink)]">U-Bahnhof Hermannstraße</span>
-                      <span v-else class="locked"><LockIcon/> GPS einschalten</span>
+                    <div key="loc" class="border-b border-[var(--danger)]/12 pb-2">
+                      <div class="flex justify-between items-center gap-2">
+                        <span class="text-[var(--ink-soft)]">Location</span>
+                        <span v-if="settings.gps" class="font-semibold text-[var(--ink)]">U-Bahnhof Hermannstraße</span>
+                      </div>
+                      <div v-if="!settings.gps" class="locked mt-1.5"><LockIcon/> <span>Erlaubnis nicht erteilt um Standort abzufragen</span></div>
                     </div>
 
-                    <div key="risk" class="flex justify-between border-b border-[var(--danger)]/12 pb-2">
-                      <span class="text-[var(--ink-soft)]">Infektionsgefahr</span>
-                      <span v-if="settings.temp" class="risk-pill">Mittel</span>
-                      <span v-else class="locked"><LockIcon/> Temperatur einschalten</span>
+                    <div key="risk" class="border-b border-[var(--danger)]/12 pb-2">
+                      <div class="flex justify-between items-center gap-2">
+                        <span class="text-[var(--ink-soft)]">Infektionsgefahr</span>
+                        <span v-if="settings.temp" class="risk-pill">Mittel</span>
+                      </div>
+                      <div v-if="!settings.temp" class="locked mt-1.5"><LockIcon/> <span>Erlaubnis nicht erteilt um Temperatur abzufragen</span></div>
                     </div>
 
-                    <div key="virus" class="flex justify-between border-b border-[var(--danger)]/12 pb-2">
-                      <span class="text-[var(--ink-soft)]">Virus-Art</span>
-                      <span v-if="settings.mic" class="font-semibold text-[var(--ink)]">Grippe</span>
-                      <span v-else class="locked"><LockIcon/> Mikrofon einschalten</span>
+                    <div key="virus" class="border-b border-[var(--danger)]/12 pb-2">
+                      <div class="flex justify-between items-center gap-2">
+                        <span class="text-[var(--ink-soft)]">Virus-Art</span>
+                        <span v-if="settings.mic" class="font-semibold text-[var(--ink)]">Grippe</span>
+                      </div>
+                      <div v-if="!settings.mic" class="locked mt-1.5"><LockIcon/> <span>Erlaubnis nicht erteilt um Mikrofon abzufragen</span></div>
                     </div>
 
                     <div key="symptoms" class="pt-1">
@@ -210,7 +218,7 @@ Wir fragen deine persönlichen Daten ab, um dir Echtzeit-Informationen über dei
                       <div v-if="settings.camera" class="flex flex-wrap gap-1.5">
                         <span v-for="s in symptoms" :key="s" class="chip">{{ s }}</span>
                       </div>
-                      <span v-else class="locked"><LockIcon/> Kamera einschalten</span>
+                      <div v-else class="locked"><LockIcon/> <span>Erlaubnis nicht erteilt um Kamera abzufragen</span></div>
                     </div>
                   </TransitionGroup>
 
@@ -258,23 +266,33 @@ Wir fragen deine persönlichen Daten ab, um dir Echtzeit-Informationen über dei
               <h3 class="text-[11px] font-semibold uppercase tracking-wide text-[var(--danger)]">Besondere Gefahrenbereiche auf Ihrer Route</h3>
             </div>
             <div class="space-y-2.5 text-[13px]">
-              <div class="flex justify-between border-b border-[var(--danger)]/12 pb-2">
-                <span class="text-[var(--ink-soft)]">Location</span>
-                <span class="font-semibold text-[var(--ink)]">U-Bahnhof Hermannstraße</span>
+              <div class="border-b border-[var(--danger)]/12 pb-2">
+                <div class="flex justify-between items-center gap-2">
+                  <span class="text-[var(--ink-soft)]">Location</span>
+                  <span v-if="settings.gps" class="font-semibold text-[var(--ink)]">U-Bahnhof Hermannstraße</span>
+                </div>
+                <div v-if="!settings.gps" class="locked mt-1.5"><LockIcon/> <span>Erlaubnis nicht erteilt um Standort abzufragen</span></div>
               </div>
-              <div class="flex justify-between border-b border-[var(--danger)]/12 pb-2">
-                <span class="text-[var(--ink-soft)]">Infektionsgefahr</span>
-                <span class="risk-pill">Mittel</span>
+              <div class="border-b border-[var(--danger)]/12 pb-2">
+                <div class="flex justify-between items-center gap-2">
+                  <span class="text-[var(--ink-soft)]">Infektionsgefahr</span>
+                  <span v-if="settings.temp" class="risk-pill">Mittel</span>
+                </div>
+                <div v-if="!settings.temp" class="locked mt-1.5"><LockIcon/> <span>Erlaubnis nicht erteilt um Temperatur abzufragen</span></div>
               </div>
-              <div class="flex justify-between border-b border-[var(--danger)]/12 pb-2">
-                <span class="text-[var(--ink-soft)]">Virus-Art</span>
-                <span class="font-semibold text-[var(--ink)]">Grippe</span>
+              <div class="border-b border-[var(--danger)]/12 pb-2">
+                <div class="flex justify-between items-center gap-2">
+                  <span class="text-[var(--ink-soft)]">Virus-Art</span>
+                  <span v-if="settings.mic" class="font-semibold text-[var(--ink)]">Grippe</span>
+                </div>
+                <div v-if="!settings.mic" class="locked mt-1.5"><LockIcon/> <span>Erlaubnis nicht erteilt um Mikrofon abzufragen</span></div>
               </div>
               <div class="pt-1">
                 <p class="text-[var(--ink-soft)] mb-1.5">Symptome</p>
-                <div class="flex flex-wrap gap-1.5">
+                <div v-if="settings.camera" class="flex flex-wrap gap-1.5">
                   <span v-for="s in symptoms" :key="s" class="chip">{{ s }}</span>
                 </div>
+                <div v-else class="locked"><LockIcon/> <span>Erlaubnis nicht erteilt um Kamera abzufragen</span></div>
               </div>
             </div>
           </div>
@@ -300,7 +318,10 @@ Wir fragen deine persönlichen Daten ab, um dir Echtzeit-Informationen über dei
               <p v-if="activePopup === 4">Wir sammeln Ihre Kameradaten, um potentiell infizierte Personen in Ihrer Umgebung erkennen zu können und Sie frühzeitig zu warnen.</p>
               <div v-if="activePopup === 5" class="space-y-3">
                 <p class="font-semibold text-[var(--ink)]">Standort, visuelle Umgebungsdaten, Lautstärke, Temperaturdaten</p>
-                <p>Diese Daten sind für die Funktionalität der App dringend nötig und werden nicht anderweitig missbraucht. </p>
+                <p>
+                  Kamera, Mikrofon, Temperatur & GPS-Sensoren: 
+                  Diese Daten sind für die Funktionalität der App dringend nötig und werden nicht anderweitig missbraucht.
+                  </p>
               </div>
               <div v-if="activePopup === 6" class="space-y-3">
                 <p class="font-semibold text-[var(--ink)]">Abstand halten, in engen Räumen Maske tragen und regelmäßig Hände waschen.
@@ -495,6 +516,18 @@ onMounted(() => {
   transform: none !important;           /* Deaktiviert den Drück-Effekt (.press) */
   pointer-events: none;                 /* Blockiert alle Hover- und Klick-Interaktionen komplett */
 }
+
+/* Lesbarkeits-Baseline: Fließtext, Listenpunkte und Buttons sind standardmäßig
+   linksbündig. Browser zentrieren <button>-Inhalte per Default (UA-Stylesheet),
+   das vererbt sich auch in verschachtelte Blockelemente — deshalb der Reset
+   hier statt einzelner "text-left"-Klassen an jeder Stelle. Zentriert bleibt
+   nur, was das bewusst überschreibt: .primary-btn, .report-btn, .sheet-close
+   (Calls-to-Action) sowie die einstelligen Zahlen-Badges (.likert-dot, die
+   dort über Flex-Justify statt text-align zentrieren). */
+p, li, button {
+  text-align: left;
+}
+
 .app-shell {
   --bg: #F5F2EC;
   --surface: #FFFFFF;
@@ -524,6 +557,7 @@ onMounted(() => {
   border-radius: 18px;
   padding: 18px;
   box-shadow: 0 1px 2px rgba(28,36,32,.04);
+  text-align: left;
 }
 
 .guarantee { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--ink-soft); }
@@ -612,6 +646,7 @@ onMounted(() => {
   border-left: 4px solid var(--danger);
   border-radius: 16px;
   padding: 18px;
+  text-align: left;
 }
 .risk-pill {
   font-size: 11px; font-weight: 700; padding: 2px 9px; border-radius: 999px;
@@ -657,11 +692,18 @@ onMounted(() => {
 }
 
 .locked {
-  display: inline-flex; align-items: center; gap: 5px;
-  font-size: 11.5px; font-weight: 600; color: var(--ink-soft);
-  background: var(--surface-alt); padding: 3px 9px 3px 7px; border-radius: 999px;
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--ink-soft);
+  background: var(--surface-alt);
+  padding: 7px 10px;
+  border-radius: 10px;
+  line-height: 1.4;
 }
-.locked svg { color: var(--ink-soft); flex-shrink: 0; }
+.locked svg { color: var(--ink-soft); flex-shrink: 0; margin-top: 1px; }
 
 .fade-row-enter-active, .fade-row-leave-active { transition: opacity .22s ease, transform .22s ease; }
 .fade-row-enter-from { opacity: 0; transform: translateY(-4px); }
@@ -695,6 +737,7 @@ onMounted(() => {
   border-radius: 22px 22px 0 0;
   padding: 10px 22px 26px;
   box-shadow: 0 -8px 30px rgba(0,0,0,.15);
+  text-align: left;
 }
 .sheet-handle { width: 36px; height: 4px; border-radius: 2px; background: var(--border); margin: 6px auto 16px; }
 .sheet-close {

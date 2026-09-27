@@ -5,16 +5,17 @@
       <template v-if="!done">
         <p class="eyebrow">Nachbefragung</p>
         <h1 class="font-display text-[28px] text-[var(--ink)] mb-3">Dein Eindruck</h1>
-        <p class="mb-8 text-[15px] leading-relaxed text-[var(--ink-soft)]">
+        <p class=" p-4 text-left mb-8 text-[15px] leading-relaxed text-[var(--ink-soft)]">
           Zum Abschluss noch ein paar Fragen zu deinem Eindruck von der App. Auch hier gibt es
           keine richtigen oder falschen Antworten.
+          <br>
         </p>
 
         <div class="space-y-4 mb-6">
           <div v-for="(q, i) in questions" :key="i" class="card">
             <div class="flex gap-2.5 mb-4">
               <span class="q-index">{{ i + 1 }}</span>
-              <p class="text-[14px] leading-snug text-[var(--ink)]">{{ q }}</p>
+              <p class="text-left text-[14px] leading-snug text-[var(--ink)]">{{ q }}</p>
             </div>
 
             <div class="likert" role="radiogroup" :aria-label="q">

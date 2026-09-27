@@ -6,7 +6,6 @@
       <p class="p-4 text-left mb-8 text-[15px] leading-relaxed text-[var(--ink-soft)]">
        Bitte gib an, wie sehr die folgenden Aussagen auf dich zutreffen. 
        <br>
-       Es gibt keine richtigen oder falschen Antworten uns interessiert deine persönliche Einschätzung.
       </p>
 
       <div class="space-y-4 mb-8">
@@ -122,6 +121,14 @@ const submit = () => {
   --ring: rgba(37, 99, 235, 0.15);
 }
 
+/* Lesbarkeits-Baseline: Fließtext, Listenpunkte und Buttons sind standardmäßig
+   linksbündig (Browser zentrieren <button>-Inhalte sonst per Default).
+   Zentriert bleiben nur der Call-to-Action-Button unten (.primary-btn) und
+   die einstelligen Zahlen-Badges (.likert-dot, zentriert über Flex-Justify). */
+p, li, button {
+  text-align: left;
+}
+
 /* Eyebrow badge */
 .eyebrow {
   display: inline-block;
@@ -143,6 +150,7 @@ const submit = () => {
   padding: 1.25rem;
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.02), 0 1px 2px -1px rgba(0, 0, 0, 0.02);
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  text-align: left;
 }
 
 .card:focus-within,
@@ -244,6 +252,7 @@ const submit = () => {
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
   transition: all 0.15s ease;
   outline: none;
+  text-align: center;
 }
 
 .primary-btn:hover:not(:disabled) {
