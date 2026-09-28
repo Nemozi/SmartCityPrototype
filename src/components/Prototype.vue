@@ -191,27 +191,7 @@
               </div>
             </div>
           </div>
-
-          <!-- FUNKTIONEN / INFOS -->
-          <div class="card">
-            <h3 class="text-[13px] font-semibold text-[var(--ink)] mb-3">Funktionen</h3>
-            <div class="space-y-2.5">
-              <p class="text-left text-[13px] leading-relaxed text-[var(--ink-soft)] flex gap-2">
-                <span class="num-dot">1</span>
-                Echtzeitinformationen über Ihre Infektionsgefahr.              
-              </p>
-              <p class="text-left text-[13px] leading-relaxed text-[var(--ink-soft)] flex gap-2">
-                <span class="num-dot">2</span>
-                Sie können Ihr Infektionsrisiko live überwachen. Bei erhöhtem Risiko werden Sie benachrichtigt.
-              </p>
-              <p class="text-[13px] leading-relaxed text-[var(--ink-soft)] flex gap-2">
-                <span class="num-dot">3</span>
-                <button class="link-btn text-left text-[11px]" @click="openPopup(6)">
-                  Wie verhalte ich mich richtig im Falle von erhöhter Infektionsgefahr?
-                </button>
-              </p>
-            </div>
-          </div>
+<!--Funktionen hier -->
 
           <!-- TEILEN-BUTTON & PROTOTYP-BEENDEN-BUTTON -->
           <div>
@@ -247,7 +227,26 @@
               <ToggleSwitch v-model="settings[val.id]"/>
             </div>
           </div>
-
+          <!-- FUNKTIONEN / INFOS -->
+          <div class="card">
+            <h3 class="text-[13px] font-semibold text-[var(--ink)] mb-3">Funktionen</h3>
+            <div class="space-y-2.5">
+              <p class="text-left text-[13px] leading-relaxed text-[var(--ink-soft)] flex gap-2">
+                <span class="num-dot">1</span>
+                Echtzeitinformationen über Ihre Infektionsgefahr.              
+              </p>
+              <p class="text-left text-[13px] leading-relaxed text-[var(--ink-soft)] flex gap-2">
+                <span class="num-dot">2</span>
+                Sie können Ihr Infektionsrisiko live überwachen. Bei erhöhtem Risiko werden Sie benachrichtigt.
+              </p>
+              <p class="text-[13px] leading-relaxed text-[var(--ink-soft)] flex gap-2">
+                <span class="num-dot">3</span>
+                <button class="link-btn text-left text-[11px]" @click="openPopup(6)">
+                  Wie verhalte ich mich richtig im Falle von erhöhter Infektionsgefahr?
+                </button>
+              </p>
+            </div>
+          </div>  
           <div class="grow pb-4"></div>
         </div>
 
