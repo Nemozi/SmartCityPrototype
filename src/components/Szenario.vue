@@ -7,7 +7,7 @@
       <div class="space-y-4 mb-8">
         <div class="card">
           <h3 class="section-title">Die Situation</h3>
-          <p class="section-text">
+          <p class="text-left section-text">
             In deiner Stadt breitet sich ein neuer, schneller ansteckender Erreger aus. Das städtische
             Gesundheitsamt setzt auf eine freiwillige App zur Kontaktnachverfolgung, um Infektionsketten
             zu stoppen.
@@ -16,7 +16,7 @@
 
         <div class="card">
           <h3 class="section-title">Deine Aufgabe</h3>
-          <p class="section-text">
+          <p class="text-left section-text">
             Du nutzt die App heute zum ersten Mal. Bitte verhalte dich so, als wäre die Situation
             real und die App eine echte Möglichkeit zum Schutz für dich und andere.
           </p>
@@ -24,7 +24,7 @@
 
         <div class="card">
           <h3 class="section-title">Funktionsweise</h3>
-          <p class="section-text">
+          <p class="text-left section-text">
             Die App warnt dich, wenn du Kontakt zu einer positiv getesteten Person hattest. Wie genau
             die App arbeitet und welche Daten du dafür freigibst, wirst du im folgenden Testverlauf
             selbst entscheiden.
@@ -33,7 +33,7 @@
         </div>
         <div class="card">
             <h3 class="section-title">Erklärung zu Sensoren</h3>
-            <p class="section-text">
+            <p class="text-left section-text">
               Einige in der App genutzten Sensoren (z. B. Kamera- & Temperaturanalyse) sind für diesen Prototypen simuliert. Bitte nimm für den Test an, dass dein Smartphone diese Fähigkeiten bereits besitzt.      
             </p>
           </div>
@@ -42,7 +42,7 @@
           <div class="section-title">
             <h3 class="notice-title ">Wichtiger Hinweis </h3>
           </div>
-          <p class="section-text">
+          <p class="text-left section-text">
             Dies ist eine Hochschulstudie. Es gibt keinen echten Erreger, alle eingegebenen oder
             freigegebenen Daten sind simuliert und werden nicht gespeichert.
           </p>
