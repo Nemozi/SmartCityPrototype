@@ -25,9 +25,9 @@
         <div class="card">
           <h3 class="section-title">Funktionsweise</h3>
           <p class="text-left section-text">
-            Die App warnt dich, wenn du Kontakt zu einer positiv getesteten Person hattest. Wie genau
-            die App arbeitet und welche Daten du dafür freigibst, wirst du im folgenden Testverlauf
-            selbst entscheiden.
+            Die App warnt dich, wenn du in einer besonders infektiösen Umgebung bist. 
+            Wie genau die App arbeitet und welche Daten du dafür freigibst, 
+            wirst du im folgenden Testverlauf selbst entscheiden.
           </p>
           
         </div>
